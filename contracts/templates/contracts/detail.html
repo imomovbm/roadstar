@@ -1,0 +1,533 @@
+{% extends "users/layout.html" %}
+
+{% load static %}
+{% load custom_filters %}
+{% block main %}
+<main id="main" class="main">
+    <!-- ✅ ALERT MESSAGES GO HERE -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}  bg-{{ message.tags }}  text-light border-0 alert-dismissible fade show"
+        role="alert">
+        {{ message }}
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div class="pagetitle">
+        <h1>Shartnoma {{ contract.code }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'users:index' %}">Asosiy</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'contracts:index' %}">Shartnomalar</a></li>
+                <li class="breadcrumb-item active">{{ contract.code }}</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+
+        <div class="row">
+            {% if contract.agreement.all %}
+            <!-- additional agreement Card -->
+            <div class="col-lg-12">
+                <div class="card info-card sales-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ushbu shartnomaning <span>| qo'shimcha kelishuvlari </span></h5>
+
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex flex-row flex-wrap gap-3 ps-3">
+                                {% for ag in contract.agreement.all %}
+                                <a href={% url "contracts:additional" contract.pk ag.pk %}>
+                                    <div class="card-header">
+                                        <b>Qo'shimcha kelishuv #{{ ag.code }}</b> ({{ ag.created_date }})
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div><!-- End additional agreement Card -->
+        {% endif %}
+
+        <!-- Sales Card -->
+        <div class="col-lg-12">
+            <div class="card info-card sales-card">
+                <div class="card-body">
+                    <h5 class="card-title">Shartnoma <span>| batafsil ma'lumotlari </span></h5>
+
+                    {% if contract.canceled %}
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="ps-3">
+                                <button type="button" class="btn btn-danger" disabled> <i class="bi bi-info"></i>  Shartnoma bekor qilingan </button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="ps-3">
+                                <a href="{% url 'contracts:index' %}">
+                                    <button type="button" class="btn btn-warning"> <i class="bi bi-arrow-left-circle"></i>  Ortga </button></a>
+                            </div>
+                        </div>
+                    </div>
+                    {% elif contract.done_deal %}
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="ps-3">
+                                <button type="button" class="btn btn-success" disabled> <i class="bi bi-info"></i>  Shartnoma muvaffaqiyatli tugallangan </button>
+                            </div>
+                            <div class="ps-3">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancel"> <i class="bi bi-person-dash"></i>  Shartnomani bekor qilish </button>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="cancel" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Shartnoma {{ contract.code }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Siz haqiqatdan ham <b>{{ contract.code }} </b>raqamli ushbu shartnomani bekor
+                                        qilmoqchimisiz?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ortga</button>
+                                        <form action="{% url 'contracts:cancel' contract.pk %}" method="post"
+                                            style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-person-dash"></i> Tasdiqlash
+                  </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- End delete Modal-->
+
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="ps-3">
+                                <a href="{% url 'contracts:index' %}">
+                                    <button type="button" class="btn btn-warning"> <i class="bi bi-arrow-left-circle"></i>  Ortga </button></a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex">
+
+                            <div class="ps-3">
+                                {% if contract.client_company %}
+                                <a href="{% url 'contracts:edit_contract_company' contract.pk  %}">
+                                    <button type="submit" class="btn btn-primary">
+                          <i class="bi bi-pencil-square"></i> Shartnoma rekvizitlarini o'zgartirish
+                        </button>
+                                </a>
+                                {% elif contract.client_person %}
+                                <a href="{% url 'contracts:edit_contract_person' contract.pk  %}">
+                                    <button type="submit" class="btn btn-primary">
+                          <i class="bi bi-pencil-square"></i> Shartnoma rekvizitlarini o'zgartirish
+                        </button>
+                                </a>
+                                {% endif %}
+                            </div>
+
+                            <div class="ps-3">
+                                <a href="{% url 'contracts:context' contract.pk  %}">
+                                    <button type="submit" class="btn btn-warning">
+                          <i class="bi bi-list-check"></i> Shartnoma bandlarini o'zgartirish
+                        </button>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <!-- Start delete centered Modal -->
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#verticalycentered">
+                          <i class="bi bi-trash"></i> O'chirish
+                        </button>
+                            <div class="modal fade" id="verticalycentered" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Shartnoma {{ contract.code }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Siz haqiqatdan ham <b>{{ contract.code }} </b>raqamli ushbu shartnomani
+                                            o'chirmoqchimisiz?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ortga</button>
+                                            <form action="{% url 'contracts:delete' contract.pk %}" method="post"
+                                                style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i> Tasdiqlash
+                                  </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- End delete Modal-->
+
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mt-2">
+                        <div class="ps-3">
+
+                            <button type="submit" class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#additional">
+                          <i class="bi bi-plus-lg"></i> Qo'shimcha kelishuv
+                        </button>
+                            <!-- qoshimcha shartnoma  -->
+                            <div class="modal fade" id="additional" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Shartnoma <b>{{ contract.code }}</b> ga qo'shimcha
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{% url 'contracts:add_additional' contract.pk %}"
+                                                method="post" style="display:inline;">
+                                                {% csrf_token %}
+
+                                                {% for paragraph in paragraphs %}
+                                                <div style="font-weight:bold; margin-top:12px;">
+                                                    {{ paragraph.number }}. {{ paragraph.header }}
+                                                </div>
+                                                {% for subkey, text in paragraph.text.items %}
+                                                <div class="form-check ms-4">
+                                                    <input class="form-check-input" type="checkbox" name="items[]" id="sub{{ paragraph.number }}_{{ subkey }}" value="{{ paragraph.number }}-{{ subkey }}">
+                                                    <label class="form-check-label" for="sub{{ paragraph.number }}_{{ subkey }}">
+                                          {{ paragraph.number }}.{{ subkey }}
+                                        </label>
+                                                </div>
+                                                {% endfor %}
+                                                {% endfor %}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ortga</button>
+
+
+                                            <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-plus-lg"></i> Yaratish
+                                  </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End add_additional Modal-->
+
+                        </div>
+
+                        <div class="ps-3">
+                            <!-- Close deal centered Modal -->
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#verticalycentered2">
+                  <i class="bi bi-check-all"></i> Shartnomani yopish
+                </button>
+                            <div class="modal fade" id="verticalycentered2" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Shartnoma {{ contract.code }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Ushbu <b>{{ contract.code }} </b>raqamli ushbu shartnomani muvaffaqiyatli
+                                            yopilsinmi?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ortga</button>
+                                            <form action="{% url 'contracts:close' contract.pk %}" method="post"
+                                                style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check"></i> Tasdiqlash
+                          </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Close deal centered Modal-->
+
+
+
+                        </div>
+                    </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div><!-- End Sales Card -->
+        </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card basic">
+                    <div class="card-body">
+                        <!-- style="font-family: 'Times New Roman', Times, serif" -->
+                        <br>
+            {% if contract.canceled %}
+                        <div class="text-center">
+                            <span class="badge bg-danger text-white">Ushbu shartnoma bekor qilingan</span>
+                        </div>
+                        {% endif %}
+                        <h5 class="card-title text-center"><b>ОЛДИ-СОТДИ ШАРТНОМАСИ</b>
+                            <br><b>Шартнома № {{ contract.code }}</b>
+                        </h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="card-title mb-0"><b>Бухоро вилояти</b></p>
+                            <p class="card-title mb-0"><b>{{ contract.created_date|date:"d.m.Y" }}</b></p>
+                        </div>
+
+                        <p style="text-indent: 3em;text-align: justify;">
+                            <b> {{ contract.partner.department_name }} </b>
+                            (бундан буён - "Бажарувчи" деб аталади) номидан ҳаракат қилувчи директор
+                            <b>{{ contract.partner.head_of_company }}</b>, бир томондан, ва
+                            <b>
+                {{ contract.get_client_name }}
+              </b> (бундан буён – "Буюртмачи" деб аталади) номидан ҳаракат қилувчи директор
+                            <b>{{ contract.get_head_of_company }}</b>, иккинчи томондан, биргаликда “Тарафлар”,
+                            алоҳида эса “Тараф” деб аталувчилар мазкур шартномани қуйидагилар ҳақида туздилар:
+                        </p>
+
+                        <div class="pt-2">
+                            <div style="text-align: center;"><b>1.ШАРТНОМА ПРЕДМЕТИ</b></div>
+                            <br>
+                            <p style="text-align: justify;">
+                                <b> Ушбу шартномага биноан, 
+                  Мижоз тўлайди ва қабул қилади ва 
+                  Ижрочи қуйидаги шартлар асосида товарларни (хизматларни) етказиб беради:
+                </b>
+                            </p>
+                            <div style="text-align: right;">1-жадвал</div>
+                            <table class="table table-bordered table-sm text-center align-middle"
+                                style="width: auto; margin: 15px auto;font-size: 14px;">
+                                <thead class="table-light">
+                                    <tr style="vertical-align: middle;word-wrap: break-word;text-align: center;  ">
+                                        <th rowspan="2">№</th>
+                                        <th rowspan="2">Маҳсулот номи <br>(хизматлар)</th>
+                                        <th rowspan="2">Товар (хизмат)лар Ягона<br> электрон миллий каталоги бўйича идентификация коди ва номи
+                                        </th>
+                                        <th rowspan="2">Товар/хизмат штрих коди</th>
+                                        <th rowspan="2">Ўлчов бирлиги</th>
+                                        <th rowspan="2">Миқдори</th>
+                                        <th rowspan="2">Нарх</th>
+                                        <th rowspan="2"> Етказиб бериш қиймати (ҚҚС сиз)</th>
+                                        <th colspan="2">ҚҚС</th>
+                                        <th rowspan="2">Етказиш баҳоси ҚҚС билан</th>
+                                    </tr>
+                                    <tr>
+                                        <td>ставка</td>
+                                        <td>сумма</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if sales %}
+                                    {% for s in sales %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ s.item.item_name }}</td>
+                                        <td>{{ s.item.code }}</td>
+                                        <td>{{ s.item.cypher_code }}</td>
+                                        <td>{% if s.item.measurement == '1' %}Dona{% else %}Litr{% endif %}</td>
+                                        <td>{{ s.amount|spaced_float:2 }}</td>
+                                        <td>{{ s.cost|spaced_float:2 }}</td>
+                                        {% with total=s.cost|multiply:s.amount %}
+                                        <td>{{ total|divide:1.12|spaced_float:2 }}</td>
+                                        <td>12%</td>
+                                        <td>{{ total|multiply:0.12|spaced_float:2 }}</td>
+                                        <td>{{ total|spaced_float:2 }}</td>
+                                        {% endwith %}
+                                    </tr>
+                                    {% endfor %}
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="7">Харидлар мавжуд эмас</td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-secondary">
+                                        <th></th>
+                                        <th><em>ЖАМИ:</em></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th>{{ contract.summ|divide:1.12|spaced_float:2 }}</th>
+                                        <th colspan="2">{{ contract.summ|multiply:0.12|spaced_float:2 }}</th>
+                                        <th>{{ contract.summ|spaced_float:2 }}</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                            <p style="text-align: center;">
+                                <b> Шартноманинг умумий миқдори: ҚҚС инобатга олган холда - 
+              <em>{{ contract.summ|floatformat:0|num_to_uz_text }} сўм. (сумма сўзлар билан)</em>
+              ({{ contract.summ|spaced_float }})</b>
+                            </p>
+
+                            <p style="text-align: justify;">
+                                1.1. <b>«СОТУВЧИ»</b> қуйидаги товарларни етказиб бериш,
+                                <b>«СОТИБ ОЛУВЧИ»</b> товарлар учун шартномада кўрсатилган муддатларда
+                                хақ тўлаш ва тарафлар келишувига асосан товарларни тўлиқ миқдорда қабул қилиб олиш
+                                мажбуриятини ўз зиммасига олади.<br>
+                1.2. Товар ҳақида маълумотлар Ушбу шартноманинг № 1-жадвалида кўрсатилган ёки товар-транспорт юк хати орқали юборилган бўлади.<br>
+                1.3. <b>"СОТИБ ОЛУВЧИ"</b> 1-жадвалда кўрсатилган жами шартнома суммасидан ошмаган ҳолда бошқа товарлар олиш
+                                хуқуқига эга.
+                            </p>
+                        </div>
+
+                        {% for paragraph in paragraphs %}
+                        <div class="pt-2">
+                            <div style="text-align: center; font-weight: bold;">
+                                {{ paragraph.number }}. {{ paragraph.header }}<br>
+                            </div>
+                            {% for subkey, text in paragraph.text.items %}
+                            <div> {{ paragraph.number }}.{{ subkey }}. {{ text|safe }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+
+                        <div class="pt-2">
+                            <div style="text-align: center;">
+                                <b> {{ last }}. ТОМОНЛАРНИНГ ЮРИДИК МАНЗИЛИ ВА РЕКВИЗИТЛАРИ.</b>
+                            </div>
+                            <br>
+                            <table
+                                style="width: 70%; margin: 0 auto; padding: 20px; border-collapse: collapse; table-layout: fixed;">
+                                <tbody>
+                                    <tr>
+                                        <td style="word-wrap: break-word;text-align: center;">
+                                            <strong>&ldquo;СОТУВЧИ&rdquo;</strong>
+                                        </td>
+                                        <td style="word-wrap: break-word;text-align: center;">
+                                            <strong>&ldquo;СОТИБ ОЛУВЧИ&rdquo;</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="word-wrap: break-word;text-align: center;">
+                                            <strong>{{ contract.partner.department_name }}</strong>
+                                        </td>
+                                        <td style="word-wrap: break-word;text-align: center;">
+                                            <strong>
+                          {{ contract.get_client_name }}
+                        </strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px; word-wrap: break-word;">
+                                            <b>Адрес:</b> {{ contract.partner.address }}
+                                            <br><b>ИНН:</b> {{ contract.partner.tin_number }}
+                                            <br><b>Хисоб рақам:</b> № {{ contract.partner.account_number }}
+                                            <br><b>Банк:</b> {{ contract.partner.bank_address }}
+                                            <br><b>МФО:</b> {{ contract.partner.mfo }}
+                                            <br><b>Тел:</b> {{ contract.partner.phone_number }}
+                                            <br>
+                                        </td>
+                                        <td style="padding: 10px; word-wrap: break-word;">
+                                            {% if contract.client_company %}
+                                            <b>Адрес:</b> {{ contract.client_company.address }}
+                                            <br><b>ИНН:</b> {{ contract.get_tin_number }}
+                                            <br><b>Хисоб рақам: №</b> {{ contract.client_company.account_number }}
+                                            <br><b>Банк:</b> {{ contract.client_company.bank_address }}
+                                            <br><b>МФО:</b> {{ contract.client_company.mfo }}
+                                            {% elif contract.client_person %}
+                                            <b>Адрес:</b> {{ contract.client_person.address }}
+                                            <br><b>ИНН:</b> {{ contract.get_tin_number }}
+                                            <br><b>ЖШШИР:</b> {{ contract.client_person.pinfl }}
+                                            <br><b>Пасспорт серия:</b> {{ contract.client_person.passport_number }}
+                                            {% endif %}
+                                            <br><b>Тел:</b> {{ contract.get_phone_number }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <b>{{ contract.partner.head_of_company }}</b><br>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <b>
+                          {{ contract.get_head_of_company }}
+                        </b>
+                                        </td>
+                                    </tr>
+                                    {% if contract.is_public %}
+                                    <tr>
+                                        <td class="text-center align-bottom" colspan="2"
+                                            style="height: 150px; padding-bottom: 5%; padding-top: 2% ">
+                                            <img src="{{ qr }}" alt="QR Code" width="120" height="120">
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex justify-content-between align-items-center mt-4 px-3">
+                                <div>
+                                    {% if contract.is_public %}
+                                    <span>
+                          <button type="button" class="btn btn-secondary" disabled>
+                            <i class="bi bi-journal-code"></i> QR code yaratilgan 
+                          </button>
+                        </span>
+                                    {% else %}
+                                    <a href="{% url 'contracts:public_contract' contract.pk %}">
+                                        <button type="button" class="btn btn-secondary">
+                            <i class="bi bi-journal-code"></i> QR code yaratish
+                          </button>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if contract.canceled %}
+                                    <a href="{% url 'contracts:canceled_pdf' contract.public_token %}">
+                                        <button type="button" class="btn btn-danger">
+                            <i class="bi bi-download"></i> PDF
+                          </button>
+                                    </a>
+                                    {% elif contract.is_public and contract.public_token %}
+                                    <a href="{% url 'contracts:pdf' contract.public_token %}">
+                                        <button type="button" class="btn btn-danger">
+                                            <i class="bi bi-download"></i> PDF
+                                        </button>
+                                    </a>
+                                    <a href="{% url 'contracts:docx' contract.public_token %}">
+                                        <button type="button" class="btn btn-primary">
+                                            <i class="bi bi-download"></i> DOCX
+                                        </button>
+                                    </a>
+                                    {% else %}
+                                    <button type="button" class="btn btn-secondary" disabled>
+                          <i class="bi bi-lock"></i> PDF
+                        </button>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</main><!-- End #main -->
+
+{% endblock main %}

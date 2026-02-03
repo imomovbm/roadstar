@@ -1,0 +1,217 @@
+{% extends "users/layout.html" %}
+{% load static %}
+
+{% block main %}
+<style>
+  .locked-field {
+    background-color: #f0f0f0 !important;
+    color: #6c757d;
+    border: 1px solid #ced4da;
+  }
+</style>
+<main id="main" class="main">
+
+    <!-- ✅ ALERT MESSAGES GO HERE -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}  bg-{{ message.tags }}  text-light border-0 alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+  <div class="pagetitle">
+    <h1>Jismoniy shaxslar</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'users:index' %}">Asosiy</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'users:client_person' %}">Jismoniy shaxslar</a></li>
+        {% if person %}
+        <li class="breadcrumb-item active"><a href="{% url 'users:edit_client_person' person.pk %}">{{ person.client_name}} ma'lumotlari </a></li>
+        {% else %}
+        <li class="breadcrumb-item active"><a href="{% url 'users:create_client_person' %}">Jismoniy shaxs qo'shish</a></li>        
+        {% endif %}
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+  <section class="section dashboard">
+    <div class="row">
+  
+      <div class="card col-md-8">
+        <div class="card-body">
+          <h5 class="card-title"> {% if person %}Jismoniy shaxs ma'lumotlarini tahrirlash{% else %}Yangi jismoniy shaxs{% endif %}</h5>
+          <!-- Floating Labels Form -->
+                <form class="row g-3" method="post" action="{% url 'users:save_client_person' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="person_id" value="{{ person.id|default:'' }}">
+
+                  <div class="col-md-10">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" name="tin_number" id="tin_number"
+                              pattern="\d{9,10}"
+                              maxlength="10"
+                              title="INN raqam kiriting..."
+                            value="{{ person.tin_number|default:'' }}" placeholder="INN raqami">
+                      <label for="tin_number">INN raqami</label>
+                      <small class="text-muted">INN 9 yoki 10 xonali raqam bo'lishi kerak</small>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" name="client_name" id="client_name"
+                            value="{{ person.client_name|default:'' }}" placeholder="F.I.O" required>
+                      <label for="client_name">F.I.O</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" name="address" id="address"
+                            value="{{ person.address|default:'' }}" placeholder="Yashash manzili" required>
+                      <label for="address">Yashash manzili</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" name="passport_number" id="passport_number"
+                            value="{{ person.passport_number|default:'' }}" 
+                            placeholder="Pasport raqami"
+                            pattern="[A-Z]{2}[0-9]{7}" title="Masalan: AA1234567">
+                      <label for="passport_number">Pasport raqami</label>
+                      <small class="text-muted">AA1234567</small>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" name="pinfl" id="pinfl"
+                              pattern="\d{14}"
+                              maxlength="14"
+                              inputmode="numeric"
+                            value="{{ person.pinfl|default:'' }}" placeholder="JSHSHIR" required>
+                      <label for="pinfl">JSHSHIR</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" name="phone_number" id="phone_number"
+                            value="{{ person.phone_number|default:'' }}"
+                            placeholder="Telefon"
+                            pattern="\+998[0-9]{9}" title="+998XXXXXXXXX" required>
+                      <label for="phone_number">Telefon</label>
+                      <small class="text-muted">+998XXXXXXXXX</small>
+
+                    </div>
+                  </div>
+
+
+                  <div class="col-md-12">
+                    <div class="form-floating">
+                      <input type="email" class="form-control" name="email" id="email"
+                            value="{{ person.email|default:'' }}"
+                            placeholder="Email"
+                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                            title="Iltimos, to‘g‘ri email kiriting (masalan: user@example.com)">
+                      <label for="email">Email</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" name="head_of_company" id="head_of_company"
+                            value="{{ person.head_of_company|default:'' }}" placeholder="Direktor">
+                      <label for="head_of_company">Direktor</label>
+                    </div>
+                  </div>
+
+
+                  <div class="text-center">
+
+                    <input type="checkbox" name="verified" value="true" {% if person.verified %}checked{% endif %}>
+                    <button type="submit" class="btn btn-primary">
+                      {% if person %}Saqlash{% else %}Yaratish{% endif %}
+                    </button>              
+
+                    <button type="reset" class="btn btn-secondary">Tozalash</button>
+
+                  </div>
+                </form>
+                <!-- End floating Labels Form -->
+
+        </div>
+      </div>  
+
+
+
+
+           <!-- Right side columns -->
+      <div class="col-lg-4">
+
+                <!-- So‘nggi faoliyat -->
+        <div class="card">
+          <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+              <li class="dropdown-header text-start">
+                <h6>Filtr</h6>
+              </li>
+              <li><a class="dropdown-item" href="#">Bugun</a></li>
+              <li><a class="dropdown-item" href="#">Shu oy</a></li>
+              <li><a class="dropdown-item" href="#">Shu yil</a></li>
+            </ul>
+          </div>
+
+          <div class="card-body">
+            <h5 class="card-title">So‘nggi faoliyat <span>| shu kungacha</span></h5>
+
+            <div class="activity">
+              {% if contracts %}
+                {% for contract in contracts %}
+              <div class="activity-item d-flex">
+                <div class="activite-label"> {{ contract.created_date|date:"d-m-y" }} </div>
+                
+                <i class="bi bi-circle-fill activity-badge text-{% if contract.canceled %}danger{% elif contract.done_deal %}success{% elif not contract.done_deal %}warning{% endif %} align-self-start"></i>
+
+                <div class="activity-content">
+                      <a href="{% url "contracts:detail" contract.pk %}" class="fw-bold text-dark">
+                        {{ contract.code }}
+                      </a> - shartnoma
+                       <!-- agreement elementi boshladi -->   
+                    <div class="activity">
+                        {% for add in contract.agreement.all %}
+                        <div class="activity-item d-flex">
+                            <div class="activite-label"> {{ add.created_date|date:"d-m-y" }} </div>
+                            
+                            <i class="bi bi-circle-fill activity-badge text-{% if add.is_public %}success{% elif not add.is_public %}warning{% endif %} align-self-start"></i>
+
+                            <div class="activity-content">
+                                  <a href="{% url "contracts:additional" contract.pk add.pk %}" class="fw-bold text-dark">
+                                    {{ add.code }}
+                                   - kelishuv </a>
+                            </div>
+                        </div>                         
+                        {% endfor %}
+                    </div>
+         <!-- agreement elementi tugadi -->   
+                </div>
+              </div><!-- Faoliyat elementi tugadi -->                            
+                {% endfor %}
+              {% endif %}
+
+            </div>
+          </div>
+        </div><!-- So‘nggi faoliyat tugadi -->
+      </div>
+
+
+    </div>
+</section>
+</main><!-- End #main -->
+
+{% endblock main %}
+
+

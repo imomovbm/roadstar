@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Gateway Test</title>
+</head>
+<body>
+    <h2>SMS Gateway Test Form</h2>
+    <form method="POST" action="" style="margin-bottom: 20px;">
+        {% csrf_token %}
+        <label>Phone Number (to):</label><br>
+        <input type="text" name="to" value="+998901234567"><br><br>
+
+        <label>Message Text:</label><br>
+        <input type="text" name="text" value="Test message"><br><br>
+
+        <label>Device ID (FCM token):</label><br>
+        <input type="text" name="deviceID" value=""><br><br>
+
+        <label>Secret:</label><br>
+        <input type="text" name="secret" value=""><br><br>
+
+        <label>Time (timestamp):</label><br>
+        <input type="text" name="time" value="{{ time_now }}"><br><br>
+
+        <button type="submit">Send Test SMS</button>
+    </form>
+
+    <hr>
+    <pre>
+    [GET or POST PARAMETERS]
+
+    <b>to</b> : phone number  
+    <b>text</b> : text message  
+    <b>secret</b> : md5 secret key with time  
+    <b>deviceID</b> : Device ID from app (FCM Token)  
+    <b>time</b> : Unix timestamp (in seconds)
+    </pre>
+</body>
+</html>

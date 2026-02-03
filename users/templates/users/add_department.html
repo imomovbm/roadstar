@@ -1,0 +1,234 @@
+{% extends "users/layout.html" %}
+{% load static %}
+
+{% block main %}
+<style>
+  .locked-field {
+    background-color: #f0f0f0 !important;
+    color: #6c757d;
+    border: 1px solid #ced4da;
+  }
+</style>
+<main id="main" class="main">
+
+    <!-- ✅ ALERT MESSAGES GO HERE -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}  bg-{{ message.tags }}  text-light border-0 alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+  <div class="pagetitle">
+    <h1>Shartnomalar</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'users:index' %}">Asosiy</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'users:departments' %}">Tashkilotlar</a></li>
+        {% if client %}
+        <li class="breadcrumb-item active"><a href="{% url 'users:edit_department' department.pk %}">{{client.client_name}} ma'lumotlari</a></li>
+        {% else %}
+        <li class="breadcrumb-item active"><a href="{% url 'users:create_department' %}">Tashkilot qo'shish</a></li>
+        {% endif %}
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+  <section class="section dashboard">
+    <div class="row">
+  
+      <div class="card col-md-8">
+        <div class="card-body">
+          <h5 class="card-title"> {% if department %}Tashkilot ma'lumotlarini tahrirlash{% else %}Yangi Tashkilot{% endif %}</h5>
+
+          <!-- Floating Labels Form -->
+          <form class="row g-3" method="post" action="{% url 'users:save_department' %}">
+            {% csrf_token %}
+            <input type="hidden" name="department_id" value="{{ department.id|default:'' }}">
+            
+            <div class="col-md-10">
+              <div class="form-floating">
+                <input type="text" class="form-control"
+                      name="tin_number"
+                      id="tin_number"
+                      pattern="\d{9,10}"
+                      maxlength="10"
+                      title="INN 9 yoki 10 xonali raqam bo'lishi kerak"
+                      value="{{ department.tin_number|default:'' }}"
+                      placeholder="INN raqami"
+                      required>
+                <label for="tin_number">INN raqami</label>
+                <small class="text-muted">INN 9 yoki 10 xonali raqam bo'lishi kerak</small>
+              </div>
+            </div>
+            <div class="col-md-2 align-items-center">
+              <button type="button" class="btn btn-primary w-100" id="fetch-btn">
+                <i class="bi bi-arrow-repeat fs-3"></i>
+              </button>
+              <div id="spinner" class="spinner-border text-primary ms-2" role="status" style="display: none;">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>            
+            <div class="col-md-12">
+              <div class="form-floating">
+                <input type="text" class="form-control" name="department" id="department"
+       value="{{ department.department_name|default:'' }}" placeholder="Yuridik shaxs nomi" required>
+                <label for="department">Yuridik shaxs nomi</label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-floating">
+                <input type="text" class="form-control" name="address" id="address"
+       value="{{ department.address|default:'' }}" placeholder="Yuridik shaxs adresi" required>
+                <label for="address">Yuridik shaxs adresi</label>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-floating">
+                <input type="text" class="form-control" name="account_number" id="account_number"
+                                    maxlength="50"
+                                    inputmode="numeric"
+       value="{{ department.account_number|default:'' }}" placeholder="Hisob raqami" required>
+                <label for="account_number">Hisob raqami</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-floating">
+                <input type="text" class="form-control" name="mfo" id="mfo"
+                                    pattern="\d{4,5,6}"
+                                    maxlength="6"
+                                    inputmode="numeric"
+       value="{{ department.mfo|default:'' }}" placeholder="MFO" required>
+                <label for="mfo">MFO</label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-floating">
+                <input type="text" class="form-control" name="bank_address" id="bank_address"
+       value="{{ department.bank_address|default:'' }}" placeholder="Bank adresi" required>
+                <label for="bank_address">Bank adresi</label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-floating">
+                <input type="text" class="form-control" name="phone_number" id="phone_number"
+                pattern="998[0-9]{9}" title="998XXXXXXXXX"
+       value="{{ department.phone_number|default:'' }}" placeholder="Telefon" required>
+                <label for="phone_number">Telefon</label>
+                <small class="text-muted">998XXXXXXXXX</small>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-floating">
+                <input type="text" class="form-control" name="head_of_company" id="head_of_company"
+       value="{{ department.head_of_company|default:'' }}" placeholder="Direktor" required>
+                <label for="head_of_company">Direktor</label>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-floating">
+                <select class="form-control" name="category">
+                  <option value="1" {% if department.category == '1' %}selected{% endif %}>Avtosalon</option>
+                  <option value="2" {% if department.category == '2' %}selected{% endif %}>Avtoehtiyot qismlari sotuvchisi</option>
+                </select>
+                <label for="category">Kategoriya</label>
+              </div>
+            </div>
+
+            <div class="text-center">
+             <button type="submit" class="btn btn-primary">
+                {% if department %}Saqlash{% else %}Yaratish{% endif %}
+              </button>              
+              <button type="reset" class="btn btn-secondary">Tozalash</button>
+                <button type="button" class="btn btn-warning" id="edit-btn">Tahrirlash</button>
+
+            </div>
+          </form><!-- End floating Labels Form -->
+
+        </div>
+      </div>  
+    </div>
+</section>
+</main><!-- End #main -->
+
+<script>
+  const fieldsToLock = ['department', 'address', 'phone_number', 'email', 'head_of_company'];
+  const editBtn = document.getElementById('edit-btn');
+  const spinner = document.getElementById('spinner');
+
+  document.getElementById('fetch-btn').addEventListener('click', async function () {  
+    let url = "";
+      const tin = document.getElementById('tin_number').value;
+      if (!tin) {
+        alert("Iltimos, INN kiriting.");
+        return;
+      }
+      url = `/users/api/fetch-company/?tin=${tin}`;
+
+    spinner.style.display = 'inline-block';
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        alert("Ma'lumot topilmadi yoki xatolik yuz berdi.");
+        return;
+      }
+
+      const data = await response.json();
+
+        document.getElementById('department').value = data.company?.name || "";
+        document.getElementById('address').value = data.company?.streetName || "";
+        document.getElementById('phone_number').value = data.companyContact?.phone || "";
+        // Fill contact info (fallback to director if companyContact is missing)
+        const companyPhone = data.companyContact?.phone;
+        const directorPhone = data.directorContact?.phone;
+        document.getElementById('phone_number').value = companyPhone || directorPhone || "";
+
+
+        const director = data.director;
+        if (director) {
+          const fullName = [director.lastName, director.firstName, director.middleName].filter(Boolean).join(" ");
+          document.getElementById('head_of_company').value = fullName;
+        }
+      // Lock fields
+      fieldsToLock.forEach(id => {
+        const field = document.getElementById(id);
+        field.setAttribute('readonly', true);
+        field.classList.add('locked-field');
+      });
+
+      editBtn.textContent = "Tahrirlash";
+      editBtn.dataset.mode = "edit";
+
+    } catch (error) {
+      console.error("Xatolik:", error);
+      alert("Ma'lumot olishda xatolik yuz berdi.");
+    } finally {
+      spinner.style.display = 'none';
+    }
+  });
+
+  // Toggle editable fields
+  editBtn.addEventListener('click', function () {
+    const isEditMode = editBtn.dataset.mode !== "locked";
+
+    fieldsToLock.forEach(id => {
+      const field = document.getElementById(id);
+      if (isEditMode) {
+        field.removeAttribute('readonly');
+        field.classList.remove('locked-field');
+      } else {
+        field.setAttribute('readonly', true);
+        field.classList.add('locked-field');
+      }
+    });
+
+    editBtn.textContent = isEditMode ? "Yopish" : "Tahrirlash";
+    editBtn.dataset.mode = isEditMode ? "locked" : "edit";
+  });
+</script>
+
+{% endblock main %}
+
+

@@ -1,0 +1,1 @@
+from roadstar_project.wsgi import application

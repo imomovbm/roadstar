@@ -1,0 +1,169 @@
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.app_name == 'users' and request.resolver_match.url_name == 'index' %}active{% else %}collapsed{% endif %}" href="{% url 'users:index' %}">
+          <i class="bi bi-grid"></i>
+          <span>Bosh sahifa</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.app_name == 'contracts'%}active{% else %}collapsed{% endif %}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide text-danger"></i><span>Shartnomalar</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="components-nav" class="nav-content {% if not request.resolver_match.app_name == 'contracts' %}collapse{% endif %}" data-bs-parent="#sidebar-nav">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.app_name == 'contracts' and request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'contracts:index' %}">
+              <i class="bi bi-circle"></i><span>Barcha shartnomalar</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.app_name == 'contracts' and request.resolver_match.url_name == 'create_contract_company' %}active{% endif %}" href="{% url 'contracts:create_contract_company' %}">
+              <i class="bi bi-circle"></i><span>Shartnoma tuzish (Yuridik shaxs)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.app_name == 'contracts' and request.resolver_match.url_name == 'create_contract_yatt' %}active{% endif %}" href="{% url 'contracts:create_contract_yatt' %}">
+              <i class="bi bi-circle"></i><span>Shartnoma tuzish (YATT)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.app_name == 'contracts' and request.resolver_match.url_name == 'create_contract_person' %}active{% endif %}" href="{% url 'contracts:create_contract_person' %}">
+              <i class="bi bi-circle"></i><span>Shartnoma tuzish (Jismoniy shaxs)</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Components Nav -->
+
+    <!-- Shaxslar -->
+      <li class="nav-item">
+    <a class="nav-link {% if request.resolver_match.url_name == 'client_company' or request.resolver_match.url_name == 'create_client_company' or request.resolver_match.url_name == 'create_client_yatt' %}active{% else %}collapsed{% endif %}"
+   data-bs-target="#shaxs-nav" data-bs-toggle="collapse" href="#">
+         <i class="bi bi-people text-warning"></i><span>Yuridik shaxslar</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="shaxs-nav" class="nav-content {% if request.resolver_match.url_name == 'client_company' or request.resolver_match.url_name == 'create_client_company' or request.resolver_match.url_name == 'create_client_yatt' %}active{% else %}collapse{% endif %}" data-bs-parent="#sidebar-nav">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'client_company'%}active{% else %}collapsed{% endif %}" href="{% url 'users:client_company' %}">
+              <i class="bi bi-circle"></i><span>Yuridik shaxslar</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link {% if request.resolver_match.url_name == 'create_client_company' %}active{% else %}collapsed{% endif %}" href="{% url 'users:create_client_company' %}">
+              <i class="bi bi-circle"></i><span>Yuridik shaxs qo'shish</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link {% if request.resolver_match.url_name == 'create_client_yatt' %}active{% else %}collapsed{% endif %}" href="{% url 'users:create_client_yatt' %}">
+              <i class="bi bi-circle"></i><span>YATT qo'shish</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Yuridik Nav -->
+
+      <!-- Jismoniy Nav -->
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'client_person' or request.resolver_match.url_name == 'create_client_person' %}active{% else %}collapsed{% endif %}"
+          data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person text-success"></i><span>Jismoniy shaxslar</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="forms-nav"
+            class="nav-content {% if request.resolver_match.url_name == 'client_person' or request.resolver_match.url_name == 'create_client_person' %}active{% else %}collapse{% endif %}"
+            data-bs-parent="#sidebar-nav">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'client_person' %}active{% else %}collapsed{% endif %}"
+              href="{% url 'users:client_person' %}">
+              <i class="bi bi-circle"></i><span>Jismoniy shaxslar</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link {% if request.resolver_match.url_name == 'create_client_person' %}active{% else %}collapsed{% endif %}"
+              href="{% url 'users:create_client_person' %}">
+              <i class="bi bi-circle"></i><span>Jismoniy shaxs qo'shish</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Jismoniy Nav -->
+
+
+      
+      <!-- Tashkilot Nav -->
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'departments' or request.resolver_match.url_name == 'create_department' %}active{% else %}collapsed{% endif %}"
+          data-bs-target="#tashkilot-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-building"></i><span>Tashkilotlar</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="tashkilot-nav"
+            class="nav-content {% if request.resolver_match.url_name == 'departments' or request.resolver_match.url_name == 'create_department' %}active{% else %}collapse{% endif %}"
+            data-bs-parent="#sidebar-nav">
+          <li>
+            <a class="nav-link {% if request.resolver_match.url_name == 'departments' %}active{% else %}collapsed{% endif %}"
+              href="{% url 'users:departments' %}">
+              <i class="bi bi-circle"></i><span>Tashkilotlar ro'yxati</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link {% if request.resolver_match.url_name == 'create_department' %}active{% else %}collapsed{% endif %}"
+              href="{% url 'users:create_department' %}">
+              <i class="bi bi-circle"></i><span>Yangi tashkilot qo'shish</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Tashkilot Nav -->
+
+
+            
+      <!-- Mahsulotlar Nav -->
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.app_name == 'products'%}active{% else %}collapsed{% endif %}"
+          data-bs-target="#product-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-bag-check"></i><span>Mahsulotlar</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="product-nav"
+            class="nav-content {% if request.resolver_match.app_name == 'products'%}active{% else %}collapse{% endif %}"
+            data-bs-parent="#sidebar-nav">
+          <li>
+            <a class="nav-link {% if request.resolver_match.app_name == 'products' and request.resolver_match.url_name == 'index' %}active{% else %}collapsed{% endif %}"
+              href="{% url 'products:index' %}">
+              <i class="bi bi-circle"></i><span>Mahsulotlar ro'yxati</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link {% if request.resolver_match.app_name == 'products' and request.resolver_match.url_name == 'create' %}active{% else %}collapsed{% endif %}"
+              href="{% url 'products:create' %}">
+              <i class="bi bi-circle"></i><span>Yangi mahsulot qo'shish</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Mahsulotlar Nav -->
+
+
+      <li class="nav-heading">Sahifalar</li>
+
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.app_name == 'sms_gate' %}active{% else %}collapsed{% endif %}" href="{% url 'sms_gate:index' %}">
+          <i class="bi bi-envelope-open text-primary"></i>
+          <span>SMS yuborish</span>
+        </a>
+      </li><!-- End Profile Page Nav -->
+      
+      <li class="nav-item">
+        <a class="nav-link  {% if request.resolver_match.app_name == 'users'%}active{% else %}collapsed{% endif %}" href="{% url 'users:user_profile' %}">
+          <i class="bi bi-person text-info"></i>
+          <span>Shaxsiy kabinet</span>
+        </a>
+      </li><!-- End Profile Page Nav -->
+
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="{% url 'users:logout' %}">
+          <i class="bi bi-box-arrow-in-left text-danger"></i>
+          <span>Chiqish</span>
+        </a>
+      </li><!-- End Login Page Nav -->
+
+    </ul>
+
+  </aside><!-- End Sidebar-->

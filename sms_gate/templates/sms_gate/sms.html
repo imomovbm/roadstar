@@ -1,0 +1,156 @@
+{% extends "users/layout.html" %}
+{% load static %}
+
+{% block main %}
+<style>
+  .locked-field {
+    background-color: #f0f0f0 !important;
+    color: #6c757d;
+    border: 1px solid #ced4da;
+  }
+</style>
+<main id="main" class="main">
+
+    <!-- ✅ ALERT MESSAGES GO HERE -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}  bg-{{ message.tags }}  text-light border-0 alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+  <div class="pagetitle">
+    <h1>Jismoniy shaxslar</h1>
+    <nav>
+
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'users:index' %}">Asosiy</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'sms_gate:index' %}">SMS yuborish</a></li>
+      </ol>
+
+    </nav>
+  </div><!-- End Page Title -->
+  <section class="section dashboard">
+    <div class="row">
+  
+      <div class="card col-md-8">
+        <div class="card-body">
+          <h5 class="card-title"> SMS yuborish</h5>
+          <!-- Floating Labels Form -->
+              <form class="row g-3" method="post" action="{% url 'sms_gate:send_sms' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="col-md-12">
+                  <div class="form-floating">
+                    <input type="file" class="form-control" name="excel_file" id="excel_file" 
+                          accept=".xlsx, .xls" placeholder="Faylni yuklang" required>
+                    <label for="excel_file">Excel faylni yuklang</label>
+                  </div>
+                  <small class="text-muted">Fayl formati: INN, Shartnoma ID, Telefon, Summa</small>
+                </div>
+
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary">
+                    Yuborish
+                  </button>              
+                  <button type="reset" class="btn btn-secondary">Tozalash</button>
+                </div>
+              </form>
+
+        </div>
+      </div>  
+
+
+
+
+           <!-- Right side columns -->
+      <div class="col-lg-4">
+
+                <!-- So‘nggi faoliyat -->
+        <div class="card">
+          <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+              <li class="dropdown-header text-start">
+                <h6>Filtr</h6>
+              </li>
+              <li><a class="dropdown-item" href="#">Bugun</a></li>
+              <li><a class="dropdown-item" href="#">Shu oy</a></li>
+              <li><a class="dropdown-item" href="#">Shu yil</a></li>
+            </ul>
+          </div>
+
+          <div class="card-body">
+            <h5 class="card-title">So‘nggi faoliyat <span>| shu kungacha</span></h5>
+
+            <div class="activity">
+              {% if contracts %}
+                {% for contract in contracts %}
+              <div class="activity-item d-flex">
+                <div class="activite-label"> {{ contract.created_date|date:"d-m-y" }} </div>
+                
+                <i class="bi bi-circle-fill activity-badge text-{% if contract.canceled %}danger{% elif contract.done_deal %}success{% elif not contract.done_deal %}warning{% endif %} align-self-start"></i>
+
+                <div class="activity-content">
+                      <a href="{% url "contracts:detail" contract.pk %}" class="fw-bold text-dark">
+                        {{ contract.code }}
+                      </a> - shartnoma
+                       <!-- agreement elementi boshladi -->   
+                    <div class="activity">
+                        {% for add in contract.agreement.all %}
+                        <div class="activity-item d-flex">
+                            <div class="activite-label"> {{ add.created_date|date:"d-m-y" }} </div>
+                            
+                            <i class="bi bi-circle-fill activity-badge text-{% if add.is_public %}success{% elif not add.is_public %}warning{% endif %} align-self-start"></i>
+
+                            <div class="activity-content">
+                                  <a href="{% url "contracts:additional" contract.pk add.pk %}" class="fw-bold text-dark">
+                                    {{ add.code }}
+                                   - kelishuv </a>
+                            </div>
+                        </div>                         
+                        {% endfor %}
+                    </div>
+         <!-- agreement elementi tugadi -->   
+                </div>
+              </div><!-- Faoliyat elementi tugadi -->                            
+                {% endfor %}
+              {% endif %}
+
+            </div>
+          </div>
+        </div><!-- So‘nggi faoliyat tugadi -->
+      </div>
+      <!-- right sidw column is ended-->
+
+      <div class="card col-md-8">
+        <div class="card-body">
+          <h5 class="card-title"> Avans va qarzlar</h5>
+          <!-- Floating Labels Form -->
+              {% if clients %}
+                {% for client in clients %}
+                  
+                  <b>{{client.0}}</b> dagi shartnomaga ko'ra: 
+                    {% if client.1 == 0 %}
+                    <span class="badge bg-success"> Avans</span> {{client.2}}
+                    {% elif client.2 == 0 %}
+                    <span class="badge bg-danger"> Qarzdorlik</span> {{client.1}}
+                    {% endif %}
+                    <br>
+
+                {% endfor %}
+              {% endif %}
+
+        </div>
+      </div>  
+
+
+    </div>
+</section>
+</main><!-- End #main -->
+
+{% endblock main %}
+
+

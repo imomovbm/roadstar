@@ -1,0 +1,217 @@
+{% extends "users/layout.html" %}
+{% load static %}
+
+{% block main %}
+<main id="main" class="main">
+
+    <!-- ✅ ALERT MESSAGES GO HERE -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}  bg-{{ message.tags }}  text-light border-0 alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+  <div class="pagetitle">
+    <h1>Jismoniy shaxslar</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'users:index' %}">Asosiy</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'users:client_person' %}">Jismoniy shaxslar</a></li>
+        <li class="breadcrumb-item active">Umumiy</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+  <section class="section dashboard">
+    <div class="row">
+  
+      <!-- Card 1 -->
+      <div class="col-xxl-4 col-md-4">
+        <div class="card info-card sales-card h-75">
+          <!-- Your JSHSHIR card -->
+          <div class="card-body">
+            <h5 class="card-title">JSHSHIR <span>| (qidiruv) </span></h5>
+
+            <div class="d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center border border-primary">
+                <i class="bi bi-person"></i>
+              </div>
+              <div class="ps-3">
+                <form method="get" class="d-flex align-items-start gap-2">
+                  <input  type="text"
+                          name="pinfl_number"
+                          value="{% if pinfl_number %}{{pinfl_number}}{% endif %}"
+                          class="form-control"
+                          placeholder="JSHSHIR kiriting..."
+                          inputmode="numeric"
+                          pattern="\d{14}"
+                          maxlength="14"
+                          minlength="5"
+                          required>
+                  <button type="submit" class="btn btn-primary"> <i class="bi bi-search"></i></button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        
+      <!-- Card 2 -->
+      <div class="col-xxl-4 col-md-4">
+        <div class="card info-card revenue-card h-75">
+          <div class="card-body">
+            <h5 class="card-title">Mijozlar ma'lumotlari <span>|(eksport excel)</span></h5>
+
+            <!-- Form with onchange event to auto-submit -->
+            <form method="get" action="#" id="filterForm">
+              <div class="d-flex align-items-center">
+                <!-- Icon circle -->
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center border border-success">
+                  <i class="bi bi-database"></i>
+                </div>
+            
+                <div class="ps-3 w-100">
+                  <div class="d-flex flex-column">
+                
+                    <!-- Umumiy -->
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="verified_status" id="all" value="all"
+                        onchange="document.getElementById('filterForm').submit()">
+                      <label class="form-check-label" for="all">
+                        <span class="badge bg-primary">
+                          <i class="bi bi-star"></i> Umumiy
+                        </span>
+                      </label>
+                    </div>
+                
+                    <!-- Verifikatsiyadan o'tgan -->
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="verified_status" id="verified" value="true"
+                          onchange="document.getElementById('filterForm').submit()">
+                        <label class="form-check-label" for="verified">
+                          <span class="badge bg-success">
+                            <i class="bi bi-check-circle"></i> Verikatsiyadan o'tgan
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                
+                    <!-- Verifikatsiyadan o'tmagan -->
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="verified_status" id="unverified" value="false"
+                        onchange="document.getElementById('filterForm').submit()">
+                      <label class="form-check-label" for="unverified">
+                        <span class="badge bg-warning">
+                          <i class="bi bi-question-circle"></i> Verifikatsiyadan o'tmagan
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+        
+      <!-- Card 3 -->
+      <div class="col-xxl-4 col-md-4">
+        <div class="card info-card revenue-card h-75">
+          <!-- Your Yaratish card -->
+          <div class="card-body">
+            <h5 class="card-title">Jismoniy shaxs <span>| (ma'lumotlarini qo'shish)</span></h5>
+            <div class="d-flex align-items-center gap-2">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center border border-success">
+                <i class="bi bi-person-plus-fill"></i>
+              </div>
+                <a href = {% url "users:create_client_person" %}>
+                  <button type="button" class="btn btn-success ms-2">
+                    <i class="bi bi-person-plus"> Yaratish</i>
+                  </button>
+                </a>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+</section>
+  
+
+            <section class="section">
+              <div class="row">
+                <div class="col-lg-12">
+          
+                 
+                  
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Mijozlar (Jismoniy shaxslar)</h5>
+            
+            <table class="table table-bordered table-striped table-hover datatable">
+              <thead>
+                <tr>
+                  <th scope="col">№ </th>
+                  <th scope="col">Ver.</th>
+                  <th scope="col">F.I.O</th>
+                  <th scope="col">JSHSHIR</th>
+                  <th scope="col">INN</th>
+                  <th scope="col">Telefon</th>
+                  <th scope="col">#</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for person in client_person %}
+                <tr>
+                  <th scope="row">{{ person.pk }}</th>
+                  {% if person.verified %}
+                  <td><span class="badge rounded-pill bg-success"><i class="bi bi-check-circle"></i></span></td>
+                  {% else %}
+                  <td><span class="badge rounded-pill bg-warning"><i class="bi bi-question-circle"></i></span></td>
+                  {% endif %}
+                  <td>
+                    {{ person.client_name }}
+                  </td>
+                  <td>
+                    {{ person.pinfl }}
+                  </td>
+                  <td>
+                    {{ person.tin_number }}
+                  </td>
+                  <td>
+                    {{ person.phone_number }}
+                  </td>
+                  
+                  <td><a href="{% url 'users:edit_client_person' person.id %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-pencil-square"></i></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <!-- End Table with stripped rows -->
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main><!-- End #main -->
+<script src="{% static 'assets/js/flatpickr.js' %}"></script>
+<script>
+  flatpickr("#dateRange", {
+    mode: "range",
+    dateFormat: "Y-m-d"
+    // Removed onClose to disable auto-submit
+  });
+</script>
+
+
+{% endblock main %}
+
+

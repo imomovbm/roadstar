@@ -1,0 +1,62 @@
+{% extends "users/layout.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block main %}
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Qo'shimcha kelishuv №{{ contract.code }} - shartnoma</h1>
+  </div>
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-10">
+        <div class="card basic">
+          <div class="card-body">
+            <form method="post" action="{% url 'contracts:save_additional' contract.pk %}" id="paragraphForm">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ contract.pk }}">
+                {% for sp in subparagraphs_to_edit %}
+                  <div class="mb-3">
+                    <label class="form-label">
+                        {{ sp.paragraph_number }}.{{ sp.subkey }} - Band matni:
+                    </label>
+                    <div class="border rounded p-2"
+                        id="text-editor-{{ sp.paragraph_number }}-{{ sp.subkey }}"
+                        contenteditable="true"
+                        style="min-height: 120px;">
+                        {{ sp.text|safe }}
+                    </div>
+                    <input type="hidden"
+                          name="text_{{ sp.paragraph_number }}_{{ sp.subkey }}"
+                          id="text_{{ sp.paragraph_number }}_{{ sp.subkey }}">
+                  </div>
+                       <button type="button" class="btn btn-sm btn-outline-primary my-2" onclick="setBold()"><b>B</b></button>
+
+                {% endfor %}
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'contracts:detail' contract.pk %}" class="btn btn-secondary">Ortga</a>
+                    <button type="submit" class="btn btn-success">Saqlash</button>
+                </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+function setBold() {
+  document.execCommand('bold', false, null);
+}
+
+document.getElementById('paragraphForm').addEventListener('submit', function(event) {
+    {% for sp in subparagraphs_to_edit %}
+        document.getElementById('text_{{ sp.paragraph_number }}_{{ sp.subkey }}').value =
+            document.getElementById('text-editor-{{ sp.paragraph_number }}-{{ sp.subkey }}').innerHTML;
+    {% endfor %}
+});
+</script>
+
+
+{% endblock main %}

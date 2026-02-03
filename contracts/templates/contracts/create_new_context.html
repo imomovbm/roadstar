@@ -1,0 +1,76 @@
+{% extends "users/layout.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block main %}
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Shartnoma bandi №{{ paragraph_num }} yaratish</h1>
+  </div>
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2">
+        <div class="card basic">
+          <div class="card-body">
+           <form method="post" action="{% url 'contracts:new_context' contract.pk %}" id="paragraphForm">
+             {% csrf_token %}
+                 <input type="hidden" name="id" value={{ contract.pk }}>
+                 <input type="hidden" name="num" value={{ paragraph_num }}>
+                  <div class="mb-3">
+                       <label for="header" class="form-label">Shartnoma bandi sarlavhasi:</label>
+                       <input type="text" class="form-control" id="header" name="header">
+                   </div>
+                   <div class="mb-3">
+                       <label for="text" class="form-label">Shartnoma bandi matni:</label>
+                       <div class="border rounded p-2"
+                           id="text-editor"
+                           contenteditable="true"
+                           style="min-height: 120px;">...</div>
+                       <input type="hidden" id="text" name="text">
+                       <button type="button" class="btn btn-sm btn-outline-primary my-2" onclick="setBold()"><b>B</b></button>
+                   </div>
+                  <div class="d-flex justify-content-between">
+                    <a href="{% url 'contracts:context' contract.pk %}" class="btn btn-secondary">Ortga</a>
+                    <button type="submit" class="btn btn-success">Saqlash</button>
+                  </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+function setBold() {
+  document.execCommand('bold', false, null); // Use the correct arguments for execCommand
+}
+
+// Get a reference to the form
+const paragraphForm = document.getElementById('paragraphForm');
+
+// Get a reference to the contenteditable div
+const textEditor = document.getElementById('text-editor');
+
+// Get a reference to the hidden input
+const hiddenTextInput = document.getElementById('text');
+
+// Add an event listener to the form's submit event
+paragraphForm.addEventListener('submit', function(event) {
+  // Before the form is submitted, transfer the HTML content from the editor
+  hiddenTextInput.value = textEditor.innerHTML;
+
+  // IMPORTANT: Do NOT call event.preventDefault() or form.submit() here
+  // unless you have a specific reason for an AJAX submission.
+  // Letting the form submit naturally will now include the updated hidden input value.
+});
+
+// Optional: If you want to see the value being set before submission for debugging:
+// paragraphForm.addEventListener('submit', function(event) {
+//   hiddenTextInput.value = textEditor.innerHTML;
+//   console.log('Value being set to hidden input:', hiddenTextInput.value);
+//   // event.preventDefault(); // Uncomment this line if you want to temporarily stop submission for debugging
+// });
+</script>
+
+{% endblock main %}

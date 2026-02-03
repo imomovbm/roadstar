@@ -1,0 +1,10 @@
+<form method="post" action="{% url 'sms_gate:sms_gateway' %}">
+  {% csrf_token %}
+  <label for="number">Phone Number:</label>
+  <input type="text" name="number" id="number" required><br><br>
+
+  <label for="message">Message:</label>
+  <textarea name="message" id="message" required></textarea><br><br>
+
+  <button type="submit">Send SMS</button>
+</form>

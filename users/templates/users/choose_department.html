@@ -1,0 +1,86 @@
+{% extends "users/layout_off.html" %}
+{% load static %}
+{% block main %}
+  <main>
+    <div class="container">
+
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+              <div class="d-flex justify-content-center py-4">
+                <a href="{% url 'users:login' %}" class="logo d-flex align-items-center w-auto">
+                  <img src="{% static 'assets/img/logo.png' %}" alt="">
+                  <span class="d-none d-lg-block">Roadstar</span>
+                </a>
+              </div><!-- End Logo -->
+
+              <div class="card mb-3">
+
+                <div class="card-body">
+
+ 
+
+              <!-- Modal HTML (place outside of any <form>) -->
+              <div class="modal fade" id="verticalycentered" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <form action="{% url 'users:choose_department' %}" method="post">
+                      {% csrf_token %}
+                      <div class="modal-header">
+                        <h5 class="modal-title">Iltimos, tizimda kirishdan oldin tashkilotni tanlang</h5>
+                      </div>
+                      <div class="modal-body">
+                          {% if error %}
+                            <div class="alert alert-danger">{{ error }}</div>
+                          {% endif %}
+                        <select class="form-select" name="department" required>
+                          <option value="" disabled selected>Tashkilotni tanlang</option>
+                          {% for dep in departments %}
+                            <option value="{{ dep.pk }}">{{ dep.department_name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">
+                          <i class="bi bi-check2"></i> Tanlash
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+
+                </div>
+              </div>
+
+              <div class="credits">
+                <!-- All the links in the footer should remain intact. -->
+                <!-- You can delete the links only if you purchased the pro version. -->
+                <!-- Licensing information: https://bootstrapmade.com/license/ -->
+                <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+                Programmed by <a href="https://t.me/ImomovBM/">ES</a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main><!-- End #main -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var myModal = new bootstrap.Modal(document.getElementById('verticalycentered'), {
+      backdrop: 'static',   // Do not close on outside click
+      keyboard: false       // Do not close on ESC key
+    });
+    myModal.show();
+  });
+</script>
+
+
+{% endblock main %}

@@ -1,0 +1,64 @@
+{% extends "users/layout.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block main %}
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Shartnoma bandi №{{ paragraph_num }} tahrirlash</h1>
+  </div>
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-10 offset-lg-1">
+        <div class="card basic">
+          <div class="card-body">
+           <form method="post" action="{% url "contracts:save_context_text"%}" id="paragraphForm">
+             {% csrf_token %}
+                 <input type="hidden" name="id" value={{ contract.pk }}>
+                 <input type="hidden" name="num" value={{ paragraph_num }}>
+                         <div class="mb-3">
+                             <label for="header" class="form-label">Paragraf sarlavhasi:</label>
+                             <input type="text" class="form-control" name="header" value="{{ paragraph.header }}">
+                         </div>
+                          {% for subkey, text in paragraph.text.items %}
+                          <div class="mb-3">
+                                <label class="form-label">{{ subkey  }} Paragraf matni:</label>
+                                <div class="border rounded p-2 contenteditable-editor"
+                                    id="text-editor-{{ subkey }}"
+                                    contenteditable="true"
+                                    style="min-height: 120px;">{{ text|safe }}</div>
+                                <input type="hidden" id="text_{{ subkey }}" name="text_{{ subkey }}">
+                              <button type="button" class="btn btn-sm btn-outline-primary my-2" onclick="setBold()"><b>B</b></button>
+                          </div>
+                          {% endfor %}
+
+                 <div class="d-flex justify-content-between">
+                   <a href="{% url 'contracts:context' contract.pk %}" class="btn btn-secondary">Ortga</a>
+                   <button type="submit" class="btn btn-success">Saqlash</button>
+                 </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+function setBold() {
+  document.execCommand('bold', false, null);
+}
+
+document.getElementById('paragraphForm').addEventListener('submit', function(event) {
+  // For all contenteditable editors, copy their HTML into the right hidden input
+  document.querySelectorAll('.contenteditable-editor').forEach(function(editor) {
+    const subkey = editor.id.replace('text-editor-', '');
+    const hiddenInput = document.getElementById('text_' + subkey);
+    if (hiddenInput) {
+      hiddenInput.value = editor.innerHTML;
+    }
+  });
+});
+</script>
+
+{% endblock main %}

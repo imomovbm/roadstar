@@ -1,0 +1,197 @@
+{% extends "users/layout.html" %}
+{% load static %}
+{% load custom_filters %}
+{% block main %}
+<main id="main" class="main">
+    <!-- ✅ ALERT MESSAGES GO HERE -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}  bg-{{ message.tags }}  text-light border-0 alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+  <div class="pagetitle">
+    <h1>Shartnoma {{ contract.code }}</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'users:index' %}">Asosiy</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'contracts:index' %}">Shartnomalar</a></li>
+        <li class="breadcrumb-item active"><a href="{% url 'contracts:detail' contract.pk %}">{{ contract.code}}</a></li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+  
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card basic">
+          <div class="card-body" > <!-- style="font-family: 'Times New Roman', Times, serif" -->         
+
+      <div class="row align-items-center mt-2">
+        <div class="col text-center">
+        </div>
+        <div class="col-auto">
+                  <a href="{% url 'contracts:detail' contract.pk %}" class="btn btn btn-warning ms-2">
+                    <i class="bi bi-arrow-left-circle"></i>  
+                  Ortga</a>
+        </div>
+      </div>
+      
+
+      <h5 class="card-title text-center"><b>{{ contract.created_date|date:"d-m-Y" }} ЙИЛДАГИ №{{ contract.code }} ШАРТНОМАГА <br> 
+          ҚЎШИМЧА КЕЛИШУВ №{{ additional.code }}</b></h5>
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="card-title mb-0"><b>{{ additional.created_date|date:"d-m-Y" }}</b></p>
+              <p class="card-title mb-0"><b>Бухоро ш.</b></p>
+            </div>
+  
+            <p style="text-indent: 3em;">
+              <b> {{ contract.partner.department_name }} </b> 
+              (кейинги ўринларда «Сотувчи» деб номланади) номидан Устав асосида
+              фаолият юритувчи директор <b>{{ contract.partner.head_of_company }}</b> бир тарафдан ва 
+              <b>
+                {{ contract.get_client_name }}
+              </b> (кейинги ўринларда «Сотиб олувчи» деб номланади) 
+              устав асосида фаолият юритувчи раҳбар 
+              <b>
+                {{ contract.get_head_of_company }}
+              </b> 
+              иккинчи тарафдан, мазкур қўшимча келишувни қуйидагилар хақида туздилар:
+            </p>
+
+            <div class="pt-2">
+              <div style="text-align: center;"><b>1.ШАРТНОМА МАЗМУНИ.</b></div>
+              <p style="text-align: justify;">
+                <b>Мазкур қўшичмча келишув </b> {{ contract.created_date|date:"d-m-Y" }} йилдаги {{ contract.code }} шартноманинг {% for add in context %}<b>{{ add.paragraph_number }}</b>, {% endfor %}
+                пунктларига ва реквизитларига ўзгартириш киритиш тўғрисида тузилди.            
+              </p>
+            </div>
+
+      <div class="pt-2">
+        <div class="mb-3 p-2 border rounded">
+            {% if context %}
+                  {% for add in context %}                    
+                    <div><b>{{ add.paragraph_number }}.</b> {{ add.paragraph_text|safe }}</div>
+                  {% endfor %}
+              {% else %}
+                    <div class="text-center text-muted">
+                        Hozircha qo'shimcha bandlar mavjud emas.
+                    </div>
+              {% endif %}
+          </div>
+      </div>
+
+
+      <div class="pt-2">
+        <div style="text-align: center;"><b> ТОМОНЛАРНИНГ ЮРИДИК МАНЗИЛИ ВА РЕКВИЗИТЛАРИ.</b></div>
+        <br>
+        <table style="width: 70%; margin: 0 auto; padding: 20px; border-collapse: collapse; table-layout: fixed;">
+                    <tbody>
+                      <tr>
+                        <td style="word-wrap: break-word;text-align: center;"><strong>&ldquo;СОТУВЧИ&rdquo;</strong></td>
+                        <td style="word-wrap: break-word;text-align: center;"><strong>&ldquo;СОТИБ ОЛУВЧИ&rdquo;</strong></td>
+                      </tr>
+                      <tr>
+                        <td style="word-wrap: break-word;text-align: center;"><strong>{{ contract.partner.department_name }}</strong></td>
+                        <td style="word-wrap: break-word;text-align: center;">
+                          <strong>
+                            {{ contract.get_client_name }}
+                          </strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px; word-wrap: break-word;">
+                          <b>Адрес:</b> {{ contract.partner.address }} 
+                          <br><b>ИНН:</b> {{ contract.partner.tin_number }}
+                          <br><b>Хисоб рақам:</b> № {{ contract.partner.account_number }}
+                          <br><b>Банк:</b> {{ contract.partner.bank_address }}
+                          <br><b>МФО:</b> {{ contract.partner.mfo }} 
+                          <br><b>Тел:</b> {{ contract.partner.phone_number }}
+                          <br>
+                        </td>
+                        <td style="padding: 10px; word-wrap: break-word;">
+                        {% if contract.client_company %}
+                          <b>Адрес:</b> {{ contract.client_company.address }}
+                          <br><b>ИНН:</b> {{ contract.get_tin_number }}
+                          <br><b>Хисоб рақам: №</b> {{ contract.client_company.account_number }}
+                          <br><b>Банк:</b> {{ contract.client_company.bank_address }}
+                          <br><b>МФО:</b> {{ contract.client_company.mfo }}
+                        {% elif contract.client_person %}
+                          <b>Адрес:</b> {{ contract.client_person.address }}
+                          <br><b>ИНН:</b> {{ contract.get_tin_number }}                        
+                          <br><b>ЖШШИР:</b> {{ contract.client_person.pinfl }}
+                          <br><b>Пасспорт серия:</b> {{ contract.client_person.passport_number }}
+                        {% endif %}
+                          <br><b>Тел:</b> {{ contract.get_phone_number }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="text-align: center;">
+                          <b>{{ contract.partner.head_of_company }}</b><br>
+                        </td>
+                        <td style="text-align: center;">
+                          <b>
+                            {{ contract.get_head_of_company }}
+                          </b>
+                        </td>
+                      </tr>
+                      {% if additional.is_public %}
+                      <tr>
+                          <td class="text-center align-bottom" colspan="2" style="height: 150px; padding-bottom: 5%; padding-top: 2% ">
+                              <img src="{{ qr }}" alt="QR Code" width="120" height="120">
+                          </td>
+                      </tr> 
+                      {% endif %}
+                    </tbody>
+        </table>      
+                  <div class="d-flex justify-content-between align-items-center mt-4 px-3">
+                    <div>
+                      {% if additional.is_public %}
+                        <span>
+                          <button type="button" class="btn btn-secondary" disabled>
+                            <i class="bi bi-journal-code"></i> QR code yaratilgan 
+                          </button>
+                        </span>
+                      {% else %}
+                        <a href="{% url 'contracts:public_agreement' contract.pk additional.pk %}">
+                          <button type="button" class="btn btn-secondary">
+                            <i class="bi bi-journal-code"></i> QR code yaratish
+                          </button>
+                        </a>                      
+                      {% endif %}
+                    </div>
+                    <div>
+                    <div>
+                      {% if additional.is_public and contract.public_token %}  
+                        <a href="{% url 'contracts:agreement_pdf' contract.public_token additional.pk %}">
+                          <button type="button" class="btn btn-danger">
+                            <i class="bi bi-download"></i> PDF
+                          </button>
+                        </a>                      
+                      {% else %}
+                        <button type="button" class="btn btn-secondary" disabled>
+                          <i class="bi bi-lock"></i> PDF
+                        </button>
+                      {% endif %}
+                      
+                    </div>
+
+
+
+      </div>
+    </div>
+
+
+        </div>
+      </div>
+    </div>
+  </section>
+  
+
+</main><!-- End #main -->
+
+
+{% endblock main %}

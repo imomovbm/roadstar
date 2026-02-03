@@ -1,0 +1,204 @@
+{% extends "users/layout.html" %}
+{% load static %}
+
+{% block main %}
+<main id="main" class="main">
+
+    <!-- ✅ ALERT MESSAGES GO HERE -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}  bg-{{ message.tags }}  text-light border-0 alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+        {% if request.GET.date_range %}
+          <div class="alert alert-success  bg-success  text-light border-0 alert-dismissible fade show" role="alert">
+            {{ request.GET.date_range }} sanalar oralig‘idagi 
+            {% if request.GET.contract_status == 'open' %}
+            yopilgan
+            {% else %}
+            yopilmagan
+            {% endif %}
+             shartnomalar ko‘rsatilmoqda.
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endif %}
+  <div class="pagetitle">
+    <h1>Shartnomalar</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'users:index' %}">Asosiy</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'contracts:index' %}">Shartnomalar</a></li>
+        <li class="breadcrumb-item active">Umumiy</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+  
+  <section class="section dashboard">
+    <div class="row">
+      <div class="col-xxl-8 col-md-10">
+        <div class="card info-card sales-card h-75">
+            <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                        <h6>Filtr</h6>
+                    </li>
+                    <li><a class="dropdown-item" href="#">Bugun</a></li>
+                    <li><a class="dropdown-item" href="#">Shu oy</a></li>
+                    <li><a class="dropdown-item" href="#">Shu yil</a></li>
+                </ul>
+            </div>
+    
+            <div class="card-body">
+                <h5 class="card-title">Sana <span>| </span></h5>
+    
+                <div class="d-flex align-items-center mb-3">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center border border-primary me-3">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <form method="get" class="d-flex flex-wrap align-items-center gap-2">
+                        <div class="me-2">
+                            <input type="text" id="dateRange" name="date_range" value="{{ request.GET.date_range }}" class="form-control" placeholder="Sanani tanlang">
+                        </div>
+    
+                        <div class="d-flex flex-column">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="contract_status" id="status_all" value="all" checked>
+                                <label class="form-check-label" for="status_all">
+                                    <span class="badge bg-primary"><i class="bi bi-star"></i> Umumiy</span>
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="contract_status" id="status_closed" value="closed">
+                                <label class="form-check-label" for="status_closed">
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Yopildi</span>
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="contract_status" id="status_open" value="open">
+                                <label class="form-check-label" for="status_open">
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle"></i> Yopilmadi</span>
+                                </label>
+                            </div>
+                        </div>
+    
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="bi bi-search"> Filtrlash</i>
+                        </button>
+                        <a href={% url "contracts:index" %}>
+                        <button type="button" class="btn btn-outline-secondary ms-2">
+                          <i class="bi bi-trash"> Tozalash</i>
+                        </button>
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-4 col-xl-12">
+            <div class="card info-card revenue-card">
+                <div class="card-body">
+                  <h5 class="card-title">Yuklash <span>| (ishlab chiqilmoqda)</span></h5>
+                      <div class="d-flex align-items-center gap-3">
+                            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center border border-success">
+                              <i class="bi bi-download"></i>
+                            </div>
+                            <form method="get" class="d-flex flex-wrap align-items-center gap-2">
+                              <button type="button" class="btn btn-success ms-2">
+                                <i class="bi bi-search"> Yuklab olish</i>
+                              </button>
+                            </form>
+                      </div>
+                </div>
+            </div>
+      </div>
+    </div>
+  </section>
+            <section class="section">
+              <div class="row">
+                <div class="col-lg-12">
+          
+                 
+                  
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title d-flex gap-3">Shartnomalar quyidagi tashkilot bilan tuzuilgan:             
+                        <span class="badge bg-primary" style="color:white;">
+                            {% if profile %}
+                              {{ profile.department.department_name }}
+                            {% endif %}
+                        </span>
+                      </h5>
+
+            <table class="table table-bordered table-striped table-hover datatable">
+              <thead>
+                <tr>
+                  <th scope="col">№ </th>
+                  <th scope="col">Muallif</th>
+                  <th scope="col">Sotuvchi</th>
+                  <th scope="col">Sotib oluvchi</th>
+                  <th scope="col">Summa</th>
+                  <th scope="col">INN</th>
+                  <th scope="col">Telefon</th>
+                  <th scope="col">Yaratilgan vaqt</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">#</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for contract in contracts %}
+                <tr>
+                  <th scope="row">{{ contract.code }}</th>
+                  <td><span class="badge rounded-pill bg-success">{{ contract.author }}</span></td>
+                  <td>
+                    {{ contract.partner.department_name }}
+                  </td>
+                  <td>
+                    {{ contract.get_client_name }}
+                  </td>
+                  <td>{{ contract.summ }}</td>
+                  <td>
+                    {{ contract.get_tin_number }}
+                  </td>
+                  <td>
+                    {{ contract.get_phone_number }}
+                  </td>
+                  <td>{{ contract.created_date|date:"Y-m-d" }}</td>
+                  {% if contract.done_deal and contract.canceled %}
+                  <td><span class="badge rounded-pill bg-danger">Bekor qilingan</span></td>
+                  {% elif contract.done_deal %}
+                  <td><span class="badge rounded-pill bg-success">Yopildi</span></td>
+                  {% else %}                  
+                  <td><span class="badge rounded-pill bg-warning">Yopilmadi</span></td>
+                  {% endif %}
+                  <td><a href="{% url 'contracts:detail' contract.pk %}">Batafsil</a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <!-- End Table with stripped rows -->
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main><!-- End #main -->
+<script src="{% static 'assets/js/flatpickr.js' %}"></script>
+<script>
+  flatpickr("#dateRange", {
+    mode: "range",
+    dateFormat: "Y-m-d"
+    // Removed onClose to disable auto-submit
+  });
+</script>
+
+
+{% endblock main %}
+
+
