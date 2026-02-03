@@ -1,0 +1,10 @@
+Django
+reportlab
+pillow
+qrcode  
+psycopg2-binary 
+requests
+eskiz-sms
+openpyxl
+python-docx
+wheel

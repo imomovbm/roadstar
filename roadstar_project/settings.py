@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,10 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--+_45s#qvg6laoit!!xw0i^ae-vp8%pa4-@%_z$y1i#47m@mo#'
+SECRET_KEY = config("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # False to run 404
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = [
     "roadstar.uz",
@@ -87,11 +89,11 @@ WSGI_APPLICATION = 'roadstar_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'roadstar_roadstar_db',
-        'USER': 'roadstar_roadstar_db',
-        'PASSWORD': 'roadstar_db',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': config("DB_NAME"),
+        'USER': config("DB_USER"),
+        'PASSWORD': config("DB_PASSWORD"),
+        'HOST': config("DB_HOST", default="localhost"),
+        'PORT': config("DB_PORT", default="5432"),
     }
 }
 
@@ -149,7 +151,7 @@ LOGIN_URL = '/users/login'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'imomovbm@gmail.com'      # gmail  manzil
-EMAIL_HOST_PASSWORD = 'isxy vlge qsff wrha'     # app paroli!
+EMAIL_PORT = config("EMAIL_PORT")
+EMAIL_USE_TLS = EMAIL_PORT
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")      # gmail  manzil
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_USER")     # app paroli!
