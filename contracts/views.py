@@ -11,7 +11,7 @@ from datetime import timedelta
 from decimal import Decimal
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-from contracts.utils import get_default_paragraph_text, generate_contract_pdf, generate_contract_canceled_pdf, get_qr_image_base64, get_qr_agreement_base64, clean_html_text,send_custom_email, send_custom_email_with_attachment, send_sms_ibnux, generate_agreement_pdf, generate_contract_docx
+from contracts.utils import *
 import re
 from django.contrib.contenttypes.models import ContentType
 from datetime import date

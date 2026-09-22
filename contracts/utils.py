@@ -536,7 +536,7 @@ def generate_contract_pdf(pk):
 
     buffer.seek(0)
     response = HttpResponse(buffer, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{contract.get_client_name()}_{contract.code}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{contract.code}_{contract.created_date}.pdf"'
      #If you want it to open in browser, use:
      #  response['Content-Disposition'] = f'inline; filename="contract_{contract.code}.pdf"'
 
@@ -620,11 +620,15 @@ def generate_contract_canceled_pdf(pk):
         f"Кўчирилган аванс пулини <font name='TimesNewRomanBold'>«Сотиб олувчи»</font>нинг қуйидаги хисоб рақамига кўчирилади:",
         styles['Justify']
     ))
-    elements.append(Spacer(1, 8))
-    elements.append(Paragraph(f"<font name='TimesNewRomanBold'>{contract.get_client_name()}</font>", styles['Justify']))
-    elements.append(Paragraph(f"Х/Р: {contract.get_client().account_number}", styles['Justify']))
-    elements.append(Paragraph(f"МФО: {contract.get_client().mfo}", styles['Justify']))
-    elements.append(Paragraph(f"ИНН: {contract.get_client().tin_number}", styles['Justify']))
+    if contract.client_type == "company":
+        elements.append(Spacer(1, 8))
+        elements.append(Paragraph(f"<font name='TimesNewRomanBold'>{contract.get_client_name()}</font>", styles['Justify']))
+        elements.append(Paragraph(f"Х/Р: {contract.get_client().account_number}", styles['Justify']))
+        elements.append(Paragraph(f"МФО: {contract.get_client().mfo}", styles['Justify']))
+        elements.append(Paragraph(f"ИНН: {contract.get_client().tin_number}", styles['Justify']))
+    else:
+        elements.append(Spacer(1, 8))
+        elements.append(Paragraph(f"<font name='TimesNewRomanBold'>{contract.get_client_name()}</font>", styles['Justify']))
 
     elements.append(Spacer(1, 8))
     

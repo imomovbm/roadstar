@@ -52,6 +52,12 @@ class ContractNew(models.Model):
     def get_client(self):
         return self.client_company or self.client_person
     
+    def client_type(self):
+        if self.client_company:
+            return "company"
+        elif self.client_person:
+            return "person"
+            
     def get_client_name(self):
         if self.client_company:
             return self.client_company.client_name

@@ -25,49 +25,47 @@ def doi(request):
 def index(request):
     return render(request, "sms_gate/sms.html")
 
+import xlrd  # pip install xlrd  (still supports legacy .xls)
+
 @login_required
 def send_sms(request):
+    clients = []  # always defined, regardless of method or exceptions
+
     if request.method == 'POST':
         try:
-            wb = load_workbook(filename=request.FILES['excel_file'], read_only=True, data_only=True)
-            ws = wb.active
-            max_row = ws.max_row
-            clients = []
-            
+            excel_file = request.FILES['excel_file']
+            wb = xlrd.open_workbook(file_contents=excel_file.read())
+            ws = wb.sheet_by_index(0)
+
             pattern = r"^№.*\d.* от \d{2}\.\d{2}\.\d{4}$"
 
+            for row_num in range(ws.nrows):
+                contract_id = str(ws.cell_value(row_num, 0)).strip()  # column A
 
-            for row_num in range(1, max_row + 1):
-                contract_id = str(ws[f'A{row_num}'].value).strip()
-                
                 if not re.match(pattern, contract_id):
-                    continue  # Skip rows not matching the pattern
+                    continue
 
-                debt = ws[f'J{row_num}'].value
-                advance = ws[f'K{row_num}'].value
+                debt = ws.cell_value(row_num, 9)    # column J
+                advance = ws.cell_value(row_num, 10)  # column K
 
-                if debt is None and advance is None:
+                if debt in (None, '') and advance in (None, ''):
                     continue
 
                 debt_val = parse_number(str(debt)) if debt else 0
                 advance_val = parse_number(str(advance)) if advance else 0
 
                 if debt_val < 1000000 and advance_val < 1000000:
-                    continue  # Skip if both values are less than 100,000
-                contract_id = contract_id.replace('от', 'raqamli')
-                client = (contract_id, debt_val, advance_val)
-                clients.append(client)
+                    continue
 
-                # You can integrate SMS sending here
-                # send_sms_ibnux(phone, f"Shartnoma {contract_id}: Qarz: {debt_val}, Avans: {advance_val} so'm")
+                contract_id = contract_id.replace('от', 'raqamli')
+                clients.append((contract_id, debt_val, advance_val))
 
             messages.success(request, f"{len(clients)} ta SMS jo'natildi!")
 
         except Exception as e:
             messages.error(request, f"Xatolik: {str(e)}")
 
-    return render(request, "sms_gate/sms.html", {
-        "clients": clients})
+    return render(request, "sms_gate/sms.html", {"clients": clients})
 
 # Create your views here.
 def send_sms_ibnux(phone, message):
